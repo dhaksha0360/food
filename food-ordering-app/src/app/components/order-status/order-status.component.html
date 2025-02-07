@@ -1,0 +1,47 @@
+<div class="container text-center py-4">
+  <h4 class="text-secondary">Order Status</h4>
+  <p class="order-number">Order No: <strong>12A394</strong></p>
+
+  <!-- Order Image -->
+  <div class="order-image">
+    <img src="images/.jpg" alt="Ordered Food" class="img-fluid rounded">
+  </div>
+
+  <!-- Order Status Timeline -->
+  <div class="timeline">
+    <div class="timeline-step completed">
+      <div class="icon-box"><i class="fas fa-clock"></i></div>
+      <div class="details">
+        <p>Order Placed</p>
+        <small>2025-02-06 | 08:00 AM</small>
+      </div>
+    </div>
+
+    <div class="timeline-step active">
+      <div class="icon-box"><i class="fas fa-utensils"></i></div>
+      <div class="details">
+        <p>Preparing Food</p>
+        <small>2025-02-06 | 08:15 AM</small>
+      </div>
+    </div>
+
+    <div class="timeline-step">
+      <div class="icon-box"><i class="fas fa-truck"></i></div>
+      <div class="details">
+        <p>Out for Delivery</p>
+        <small>Estimated 30 mins</small>
+      </div>
+    </div>
+
+    <div class="timeline-step">
+      <div class="icon-box"><i class="fas fa-home"></i></div>
+      <div class="details">
+        <p>Delivered</p>
+        <small>Pending</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm Order Button -->
+  <button class="btn btn-danger btn-lg mt-4" (click)="goToMenu()">Confirm Order</button>
+</div>

@@ -1,0 +1,43 @@
+<div class="container py-5">
+  <h2 class="text-center mb-4">Checkout</h2>
+
+  <form #orderForm="ngForm" (ngSubmit)="placeOrder()" class="order-form">
+    <div class="card p-4 shadow-sm">
+      <h4 class="mb-3">Delivery Details</h4>
+
+      <div class="mb-3">
+        <label for="name" class="form-label">Full Name</label>
+        <input type="text" id="name" class="form-control" required [(ngModel)]="orderDetails.name" name="name">
+      </div>
+
+      <div class="mb-3">
+        <label for="address" class="form-label">Address</label>
+        <textarea id="address" class="form-control" rows="3" required [(ngModel)]="orderDetails.address" name="address"></textarea>
+      </div>
+
+      <div class="mb-3">
+        <label for="phone" class="form-label">Phone Number</label>
+        <input type="text" id="phone" class="form-control" required [(ngModel)]="orderDetails.phone" name="phone">
+      </div>
+
+      <h4 class="mt-4 mb-3">Payment Method</h4>
+      <div class="mb-3">
+        <label class="form-label">Select Payment Method</label>
+        <select class="form-select" required [(ngModel)]="orderDetails.paymentMethod" name="paymentMethod">
+          <option value="Credit Card">Credit Card</option>
+          <option value="Debit Card">Debit Card</option>
+          <option value="Cash on Delivery">Cash on Delivery</option>
+        </select>
+      </div>
+
+      <div class="text-center mt-4">
+        <h5>Total: ${{ totalPrice }}</h5>
+      </div>
+    </div>
+
+    <div class="text-center mt-4">
+      <button type="submit" class="btn btn-success me-2">Place Order</button>
+      <button type="button" class="btn btn-outline-secondary" (click)="goBack()">Cancel</button>
+    </div>
+  </form>
+</div>

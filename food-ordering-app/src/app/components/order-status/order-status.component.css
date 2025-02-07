@@ -1,0 +1,100 @@
+.container {
+    max-width: 400px;
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    margin: 0 auto;
+}
+
+.order-number {
+    font-size: 14px;
+    color: #777;
+    text-align: center;
+}
+
+.order-image img {
+    width: 60%;
+    max-height: 200px;
+    object-fit: cover;
+    border-radius: 10px;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Timeline */
+.timeline {
+    position: relative;
+    margin-top: 40px;
+    padding-left: 45px;
+}
+
+/* Timeline Step */
+.timeline-step {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    position: relative;
+    min-height: 60px; /* Ensure steps are spaced properly */
+}
+
+/* SOLID VERTICAL LINE */
+.timeline-step:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    width: 4px; /* Line thickness */
+    height: 100%; /* Full height */
+    background-color: #f4f0f0; /* Solid red color */
+    left: 15px;
+    top: 36px; /* Starts from below the icon */
+}
+
+/* Icon Box */
+.icon-box {
+    width: 36px;
+    height: 36px;
+    background: #fff;
+    border: 2px solid #ddd;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    color: #777;
+    position: relative;
+    margin-right: 10px;
+    z-index: 1; /* Ensures icons appear above the line */
+}
+
+/* Completed & Active Steps */
+.timeline-step.completed .icon-box {
+    border-color: green;
+    color: green;
+}
+
+.timeline-step.active .icon-box {
+    border-color: red;
+    color: red;
+}
+
+/* Order Details */
+.details {
+    flex-grow: 1;
+}
+
+.details p {
+    margin: 0;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.details small {
+    font-size: 12px;
+    color: #777;
+}
+
+/* Confirm Order Button */
+.btn-danger {
+    width: 100%;
+    margin-top: 20px;
+}

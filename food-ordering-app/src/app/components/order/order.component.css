@@ -1,0 +1,27 @@
+.container {
+    max-width: 600px;
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  h4 {
+    margin-bottom: 15px;
+  }
+  
+  .order-form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .card {
+    border: none;
+    border-radius: 10px;
+    background: #f8f9fa;
+  }
+  
+  .btn {
+    padding: 10px 20px;
+    font-size: 16px;
+  }

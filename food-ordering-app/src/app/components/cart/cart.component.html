@@ -1,0 +1,36 @@
+<div class="container py-5">
+  <h2 class="text-center mb-4">Your Cart</h2>
+
+  <div *ngIf="cartItems.length > 0; else emptyCart">
+    <div class="row d-flex flex-nowrap overflow-auto"> <!-- Flex-nowrap prevents wrapping -->
+      <div *ngFor="let item of cartItems; let i = index" class="col-auto"> <!-- col-auto makes each card fit content -->
+        <div class="card cart-item shadow-sm">
+          <img src="images/{{ item.image }}" class="card-img-top" alt="{{ item.name }}">
+          <div class="card-body text-center">
+            <h5 class="card-title">{{ item.name }}</h5>
+            <p class="card-text">Price: ${{ item.price }}</p>
+            <div class="d-flex justify-content-center align-items-center">
+              <button class="btn btn-secondary btn-sm" (click)="decreaseQuantity(i)">-</button>
+              <span class="mx-3">{{ item.quantity }}</span>
+              <button class="btn btn-secondary btn-sm" (click)="increaseQuantity(i)">+</button>
+            </div>
+            <button class="btn btn-danger btn-sm mt-2" (click)="removeFromCart(i)">Remove</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center mt-4">
+      <h4>Total: ${{ getTotalPrice() }}</h4>
+      <button class="btn btn-success me-2" (click)="proceedToCheckout()">Proceed to Checkout</button> <!-- Updated Button -->
+      <button class="btn btn-outline-primary" (click)="continueShopping()">Continue Shopping</button>
+    </div>
+  </div>
+
+  <ng-template #emptyCart>
+    <div class="text-center">
+      <h4>Your cart is empty</h4>
+      <a routerLink="/menu" class="btn btn-primary mt-3">Browse Menu</a>
+    </div>
+  </ng-template>
+</div>

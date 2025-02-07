@@ -1,0 +1,7 @@
+/* You can add global styles to this file, and also import other style files */
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
+.navbar-nav .nav-link.active {
+    font-weight: bold;
+    color: #f8d210 !important;
+  }
