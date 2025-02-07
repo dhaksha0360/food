@@ -3,6 +3,7 @@ const mysql = require('mysql2');
 const cors = require('cors');
 const { Server } = require('socket.io');
 const http = require('http');
+const path = require('path'); // Import path module
 
 const app = express();
 const server = http.createServer(app);
@@ -16,7 +17,13 @@ const io = new Server(server, {
 app.use(cors());
 app.use(express.json());
 
-// Connect to MySQL
+// ✅ Serve static images from the 'public' folder
+app.use('/images', (req, res, next) => {
+  console.log(`Image request received: ${req.url}`);
+  next();
+}, express.static(path.join(__dirname, 'public', 'images')));
+
+// ✅ Connect to MySQL
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root', // Change if needed
@@ -29,18 +36,25 @@ db.connect(err => {
     console.error('Database Connection Failed:', err);
     return;
   }
-  console.log('MySQL Connected...');
+  console.log('✅ MySQL Connected...');
 });
 
-// Fetch food items for the menu
+// ✅ Fetch food items for the menu
 app.get('/api/menu', (req, res) => {
   db.query('SELECT * FROM menu', (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
+
+    // Modify image paths to include the full URL
+    results = results.map(item => ({
+      ...item,
+      image: `http://localhost:5004/images/${item.image}`
+    }));
+
     res.json(results);
   });
 });
 
-// Add item to cart
+// ✅ Add item to cart
 app.post('/api/cart/add', (req, res) => {
   const { id, name, price, image } = req.body;
 
@@ -48,15 +62,11 @@ app.post('/api/cart/add', (req, res) => {
     if (err) return res.status(500).json({ error: err.message });
 
     if (results.length > 0) {
-      db.query(
-        'UPDATE cart SET quantity = quantity + 1 WHERE id = ?',
-        [id],
-        err => {
-          if (err) return res.status(500).json({ error: err.message });
-          io.emit('cartUpdated');
-          res.json({ message: 'Quantity increased' });
-        }
-      );
+      db.query('UPDATE cart SET quantity = quantity + 1 WHERE id = ?', [id], err => {
+        if (err) return res.status(500).json({ error: err.message });
+        io.emit('cartUpdated');
+        res.json({ message: 'Quantity increased' });
+      });
     } else {
       db.query(
         'INSERT INTO cart (id, name, price, quantity, image) VALUES (?, ?, ?, ?, ?)',
@@ -71,51 +81,50 @@ app.post('/api/cart/add', (req, res) => {
   });
 });
 
-// Get cart items
+// ✅ Get cart items
 app.get('/api/cart', (req, res) => {
   db.query('SELECT * FROM cart', (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
+
+    // Modify image paths
+    results = results.map(item => ({
+      ...item,
+      image: `http://localhost:5004/images/${item.image}`
+    }));
+
     res.json(results);
   });
 });
 
-// Increase item quantity
+// ✅ Increase item quantity
 app.put('/api/cart/increase/:id', (req, res) => {
-  db.query(
-    'UPDATE cart SET quantity = quantity + 1 WHERE id = ?',
-    [req.params.id],
-    err => {
+  db.query('UPDATE cart SET quantity = quantity + 1 WHERE id = ?', [req.params.id], err => {
+    if (err) return res.status(500).json({ error: err.message });
+
+    db.query('SELECT * FROM cart', (err, updatedCart) => {
       if (err) return res.status(500).json({ error: err.message });
 
-      db.query('SELECT * FROM cart', (err, updatedCart) => {
-        if (err) return res.status(500).json({ error: err.message });
-
-        io.emit('cartUpdated', updatedCart);
-        res.json({ message: 'Quantity increased' });
-      });
-    }
-  );
+      io.emit('cartUpdated', updatedCart);
+      res.json({ message: 'Quantity increased' });
+    });
+  });
 });
 
-// Decrease item quantity
+// ✅ Decrease item quantity
 app.put('/api/cart/decrease/:id', (req, res) => {
-  db.query(
-    'UPDATE cart SET quantity = quantity - 1 WHERE id = ? AND quantity > 1',
-    [req.params.id],
-    err => {
+  db.query('UPDATE cart SET quantity = quantity - 1 WHERE id = ? AND quantity > 1', [req.params.id], err => {
+    if (err) return res.status(500).json({ error: err.message });
+
+    db.query('SELECT * FROM cart', (err, updatedCart) => {
       if (err) return res.status(500).json({ error: err.message });
 
-      db.query('SELECT * FROM cart', (err, updatedCart) => {
-        if (err) return res.status(500).json({ error: err.message });
-
-        io.emit('cartUpdated', updatedCart);
-        res.json({ message: 'Quantity decreased' });
-      });
-    }
-  );
+      io.emit('cartUpdated', updatedCart);
+      res.json({ message: 'Quantity decreased' });
+    });
+  });
 });
 
-// Remove item from cart
+// ✅ Remove item from cart
 app.delete('/api/cart/remove/:id', (req, res) => {
   db.query('DELETE FROM cart WHERE id = ?', [req.params.id], err => {
     if (err) return res.status(500).json({ error: err.message });
@@ -129,7 +138,7 @@ app.delete('/api/cart/remove/:id', (req, res) => {
   });
 });
 
-// Fetch cart total price
+// ✅ Fetch cart total price
 app.get('/api/cart/total', (req, res) => {
   db.query('SELECT SUM(price * quantity) AS total FROM cart', (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
@@ -137,11 +146,10 @@ app.get('/api/cart/total', (req, res) => {
   });
 });
 
-// Place an order
+// ✅ Place an order
 app.post('/api/orders', (req, res) => {
   const { name, address, phone, paymentMethod } = req.body;
 
-  // Calculate total price
   db.query('SELECT SUM(price * quantity) AS total FROM cart', (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
 
@@ -151,7 +159,6 @@ app.post('/api/orders', (req, res) => {
       return res.status(400).json({ error: 'Cart is empty. Add items before placing an order.' });
     }
 
-    // Insert order into database
     db.query(
       'INSERT INTO orders (name, address, phone, payment_method, total) VALUES (?, ?, ?, ?, ?)',
       [name, address, phone, paymentMethod, total],
@@ -160,20 +167,17 @@ app.post('/api/orders', (req, res) => {
 
         const orderId = result.insertId;
 
-        // Retrieve cart items
         db.query('SELECT * FROM cart', (err, cartItems) => {
           if (err) return res.status(500).json({ error: err.message });
 
           const orderItems = cartItems.map(item => [orderId, item.name, item.price, item.quantity]);
 
-          // Insert order items into order_items table
           db.query(
             'INSERT INTO order_items (order_id, item_name, price, quantity) VALUES ?',
             [orderItems],
             err => {
               if (err) return res.status(500).json({ error: err.message });
 
-              // Clear the cart after order placement
               db.query('DELETE FROM cart', deleteErr => {
                 if (deleteErr) return res.status(500).json({ error: deleteErr.message });
 
@@ -188,7 +192,7 @@ app.post('/api/orders', (req, res) => {
   });
 });
 
-// Fetch all orders
+// ✅ Fetch all orders
 app.get('/api/orders', (req, res) => {
   db.query('SELECT * FROM orders ORDER BY created_at DESC', (err, results) => {
     if (err) return res.status(500).json({ error: err.message });
@@ -196,7 +200,7 @@ app.get('/api/orders', (req, res) => {
   });
 });
 
-// Fetch specific order details
+// ✅ Fetch specific order details
 app.get('/api/orders/:id', (req, res) => {
   const orderId = req.params.id;
 
@@ -211,7 +215,7 @@ app.get('/api/orders/:id', (req, res) => {
   });
 });
 
-// WebSocket connection
+// ✅ WebSocket connection
 io.on('connection', socket => {
   console.log('Client connected');
   socket.on('disconnect', () => {
@@ -219,6 +223,7 @@ io.on('connection', socket => {
   });
 });
 
+// ✅ Start server
 server.listen(5004, () => {
-  console.log('Server running on http://localhost:5004');
+  console.log('✅ Server running on http://localhost:5004');
 });
